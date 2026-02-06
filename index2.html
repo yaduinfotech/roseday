@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Rose Day 🌹</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: radial-gradient(circle, #ff6b81, #ff4757);
+  height: 100vh;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app {
+  text-align: center;
+  padding: 20px;
+  max-width: 400px;
+  animation: fadeIn 2s ease;
+}
+
+h1 {
+  font-size: 2.3rem;
+  animation: glow 2s infinite alternate;
+}
+
+.name {
+  font-size: 1.7rem;
+  font-weight: bold;
+  margin: 10px 0;
+  letter-spacing: 3px;
+}
+
+.rose {
+  width: 200px;
+  margin: 20px auto;
+  animation: float 3s infinite ease-in-out;
+  cursor: pointer;
+}
+
+.message {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+button {
+  background: white;
+  color: #ff4757;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* Surprise Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.modal-content {
+  animation: zoomIn 1s ease;
+}
+
+.modal h2 {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.modal p {
+  font-size: 1.2rem;
+}
+
+/* Effects */
+.heart {
+  position: absolute;
+  color: pink;
+  font-size: 22px;
+  animation: floatUp 4s linear forwards;
+}
+
+.sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  animation: sparkle 1s linear forwards;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(30px);}
+  to {opacity:1;}
+}
+
+@keyframes glow {
+  from {text-shadow:0 0 5px white;}
+  to {text-shadow:0 0 20px #ffd6e0;}
+}
+
+@keyframes float {
+  50% {transform: translateY(-15px);}
+}
+
+@keyframes floatUp {
+  to {transform: translateY(-120vh); opacity:0;}
+}
+
+@keyframes sparkle {
+  to {transform: scale(2); opacity:0;}
+}
+
+@keyframes zoomIn {
+  from {transform: scale(0);}
+  to {transform: scale(1);}
+}
+</style>
+</head>
+
+<body>
+
+<audio id="music" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div class="app">
+  <h1>Happy Rose Day 🌹</h1>
+  <div class="name" id="name"></div>
+
+  <p class="message">
+    You are not just my bestie,<br>
+    you are my forever rose 🌹
+  </p>
+
+  <img src="rose.gif" class="rose" onclick="roseBloom()">
+
+  <div class="controls">
+    <button onclick="toggleMusic()">🎵 Music</button>
+    <button onclick="openSurprise()">🎁 Surprise</button>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2>💖 You Are Special 💖</h2>
+    <p>
+      This rose is a promise of friendship,<br>
+      love & endless smiles 🌹
+    </p>
+    <br>
+    <button onclick="closeSurprise()">Close</button>
+  </div>
+</div>
+
+<script>
+/* 💌 Name typing animation */
+const bestieName = "RIYA"; // CHANGE NAME HERE
+let i = 0;
+const nameBox = document.getElementById("name");
+
+function typeName() {
+  if (i < bestieName.length) {
+    nameBox.innerHTML += bestieName.charAt(i);
+    i++;
+    setTimeout(typeName, 300);
+  }
+}
+typeName();
+
+/* 🎵 Music */
+const music = document.getElementById("music");
+function toggleMusic() {
+  music.paused ? music.play() : music.pause();
+}
+
+/* 🎁 Surprise */
+function openSurprise() {
+  document.getElementById("modal").style.display = "flex";
+}
+function closeSurprise() {
+  document.getElementById("modal").style.display = "none";
+}
+
+/* 🌹 Rose Bloom */
+function roseBloom() {
+  for (let i = 0; i < 15; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.style.left = Math.random()*100 + "vw";
+    s.style.top = Math.random()*100 + "vh";
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),1000);
+  }
+}
+
+/* ❤️ Hearts on touch */
+document.addEventListener("click", e => {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerHTML = "❤️";
+  heart.style.left = e.clientX + "px";
+  heart.style.top = e.clientY + "px";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),4000);
+});
+</script>
+
+</body>
+</html>
