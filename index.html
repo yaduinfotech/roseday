@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Happy Rose Day 🌹</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #ff758c, #ff7eb3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        color: #fff;
+        text-align: center;
+    }
+
+    .container {
+        padding: 20px;
+        max-width: 420px;
+        width: 100%;
+        animation: fadeIn 2s ease;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+        margin-bottom: 10px;
+        animation: glow 2s infinite alternate;
+    }
+
+    p {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        opacity: 0.95;
+    }
+
+    /* 🌹 Rose Animation */
+    .rose {
+        width: 160px;
+        margin: 0 auto 20px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .petal {
+        animation: bloom 3s ease-in-out infinite alternate;
+        transform-origin: center;
+    }
+
+    /* 💖 Button */
+    .btn {
+        background: #fff;
+        color: #ff4f81;
+        padding: 12px 24px;
+        border-radius: 30px;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        transition: transform 0.3s;
+    }
+
+    .btn:hover {
+        transform: scale(1.1);
+    }
+
+    /* 🌸 Falling petals */
+    .petal-fall {
+        position: absolute;
+        top: -10px;
+        font-size: 20px;
+        animation: fall linear infinite;
+        opacity: 0.8;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 5px #fff; }
+        to { text-shadow: 0 0 20px #ffccd5; }
+    }
+
+    @keyframes float {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+    @keyframes bloom {
+        from { transform: scale(0.95); }
+        to { transform: scale(1.05); }
+    }
+
+    @keyframes fall {
+        to {
+            transform: translateY(110vh) rotate(360deg);
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Happy Rose Day 🌹</h1>
+    <p>
+        To my bestie 💕<br>
+        Just like a rose, you make my life brighter, happier & more beautiful 🌸
+    </p>
+
+    <!-- 🌹 Animated Rose SVG -->
+    <svg class="rose" viewBox="0 0 200 200">
+        <circle cx="100" cy="90" r="40" fill="#ff1e56" class="petal"/>
+        <circle cx="80" cy="80" r="30" fill="#ff4f81" class="petal"/>
+        <circle cx="120" cy="80" r="30" fill="#ff4f81" class="petal"/>
+        <circle cx="100" cy="110" r="30" fill="#ff6f91" class="petal"/>
+        <rect x="95" y="130" width="10" height="50" fill="#2ecc71"/>
+        <path d="M95 160 Q70 150 80 130" fill="#2ecc71"/>
+        <path d="M105 160 Q130 150 120 130" fill="#2ecc71"/>
+    </svg>
+
+    <button class="btn" onclick="showLove()">Tap for Love 💖</button>
+</div>
+
+<script>
+    function showLove() {
+        alert("🌹 You are the most precious rose in my life 🌹");
+    }
+
+    // 🌸 Create falling petals
+    function createPetal() {
+        const petal = document.createElement("div");
+        petal.classList.add("petal-fall");
+        petal.innerHTML = "🌸";
+        petal.style.left = Math.random() * 100 + "vw";
+        petal.style.animationDuration = (Math.random() * 3 + 4) + "s";
+        document.body.appendChild(petal);
+
+        setTimeout(() => {
+            petal.remove();
+        }, 7000);
+    }
+
+    setInterval(createPetal, 400);
+</script>
+
+</body>
+</html>
