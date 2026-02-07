@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Valentine Week ❤️</title>
-    <icon
+    <link rel="icon" type="image/x-icon" href="https://www.pngplay.com/wp-content/uploads/1/Valentine-Heart-PNG-Clipart-Background.png">
 
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif}
@@ -361,10 +361,44 @@
                 // Try Periodic Background Sync (best-effort - limited browser support)
                 if ('periodicSync' in reg) {
                     try {
-                        await reg.periodicSync.register('hourly-notify', { minInterval: 60 * 60 * 1000 });
-                        console.log('Registered periodicSync hourly-notify');
+                        // Prefer checking permissions first when available to avoid noisy NotAllowedError
+                        if (navigator.permissions && navigator.permissions.query) {
+                            try {
+                                const p = await navigator.permissions.query({ name: 'periodic-background-sync' });
+                                if (p.state === 'granted') {
+                                    await reg.periodicSync.register('hourly-notify', { minInterval: 60 * 60 * 1000 });
+                                    console.log('Registered periodicSync hourly-notify');
+                                } else {
+                                    console.log('periodic-background-sync permission state:', p.state, '- skipping registration');
+                                }
+                            } catch (permErr) {
+                                // Some browsers don't support querying this permission; fall back to try/catch register
+                                try {
+                                    await reg.periodicSync.register('hourly-notify', { minInterval: 60 * 60 * 1000 });
+                                    console.log('Registered periodicSync hourly-notify');
+                                } catch (e) {
+                                    if (e && e.name === 'NotAllowedError') {
+                                        console.log('periodicSync registration denied (NotAllowed). This often requires the site to be installed as a PWA or enabled via browser flags.');
+                                    } else {
+                                        console.log('periodicSync registration failed', e);
+                                    }
+                                }
+                            }
+                        } else {
+                            // Permissions API not available for this feature — attempt registration and handle error
+                            try {
+                                await reg.periodicSync.register('hourly-notify', { minInterval: 60 * 60 * 1000 });
+                                console.log('Registered periodicSync hourly-notify');
+                            } catch (e) {
+                                if (e && e.name === 'NotAllowedError') {
+                                    console.log('periodicSync registration denied (NotAllowed). This often requires the site to be installed as a PWA or enabled via browser flags.');
+                                } else {
+                                    console.log('periodicSync registration failed', e);
+                                }
+                            }
+                        }
                     } catch (e) {
-                        console.log('periodicSync registration failed', e);
+                        console.log('periodicSync registration flow failed', e);
                     }
                 } else {
                     console.log('periodicSync not supported; will rely on in-page timer when open');
