@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Valentine Week ❤️</title>
+    <icon
 
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif}
@@ -343,6 +344,94 @@
     }
 
     initApp();
+</script>
+<!-- Service Worker & Notification registration -->
+<script>
+    async function registerNotifications() {
+        if (!('Notification' in window)) return console.log('Notifications not supported');
+
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') return console.log('Notification permission not granted');
+
+        if ('serviceWorker' in navigator) {
+            try {
+                const reg = await navigator.serviceWorker.register('/sw.js');
+                console.log('Service worker registered', reg);
+
+                // Try Periodic Background Sync (best-effort - limited browser support)
+                if ('periodicSync' in reg) {
+                    try {
+                        await reg.periodicSync.register('hourly-notify', { minInterval: 60 * 60 * 1000 });
+                        console.log('Registered periodicSync hourly-notify');
+                    } catch (e) {
+                        console.log('periodicSync registration failed', e);
+                    }
+                } else {
+                    console.log('periodicSync not supported; will rely on in-page timer when open');
+                }
+            } catch (e) {
+                console.error('Service worker registration failed', e);
+            }
+        }
+
+        // Fallback: when page is open, show hourly notifications via setInterval
+        // so users get notifications while the tab is open.
+        setInterval(() => {
+            showNotificationForCurrentDay();
+        }, 60 * 60 * 1000);
+    }
+
+        // Returns {title, message, img} using the same mapping as the service worker
+        function getNotificationForDate(date) {
+            const month = date.getMonth(); // 0=Jan, 1=Feb
+            const day = date.getDate();
+            let title, message;
+            if (month === 1) {
+                switch (day) {
+                    case 7:
+                        title = "It's Rose Day! 🌹"; message = "Have you seen your blooming surprise?"; break;
+                    case 8:
+                        title = "It's Propose Day! 💍"; message = "Someone is waiting for your answer..."; break;
+                    case 9:
+                        title = "It's Chocolate Day! 🍫"; message = "Something sweet is waiting for you!"; break;
+                    case 10:
+                        title = "It's Teddy Day! 🧸"; message = "Your fluffy friend is missing you!"; break;
+                    case 11:
+                        title = "It's Promise Day! 🤝"; message = "A special promise is waiting..."; break;
+                    case 12:
+                        title = "It's Hug Day! 🤗"; message = "Sending you a virtual warm hug!"; break;
+                    case 13:
+                        title = "It's Kiss Day! 💋"; message = "A little magic is waiting in the app!"; break;
+                    case 14:
+                        title = "Happy Valentine's Day! ❤️"; message = "Your biggest surprise is ready!"; break;
+                    default:
+                        title = "Miss You! ❤️"; message = "Open the app to see today's surprise!";
+                }
+            } else {
+                title = "Miss You! ❤️"; message = "Open the app to see today's surprise!";
+            }
+            const imgMap = {7: '/rose.png', 8: '/propose.png', 9: '/chocolate.png', 10: '/teddy.png', 11: '/promise.png', 12: '/hug.png', 13: '/kiss.png', 14: '/valentine.png'};
+            return { title, message, img: imgMap[day] || '/rose.png' };
+        }
+
+        function showNotificationForCurrentDay() {
+        try {
+                const date = new Date();
+                const { title, message, img } = getNotificationForDate(date);
+                const options = { body: message || '', icon: img || '/rose.png', badge: img || '/rose.png' };
+            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg) reg.showNotification(title, options);
+                    else new Notification(title, options);
+                });
+            } else {
+                new Notification(title, options);
+            }
+        } catch (e) { console.error('notify failed', e); }
+    }
+
+    // Start the registration flow after a short delay to avoid blocking init
+    setTimeout(registerNotifications, 1000);
 </script>
 </body>
 </html>
