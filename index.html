@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bestie ❤️</title>
+<title>Valentine Week ❤️</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
-body{height:100vh;overflow:hidden;color:#fff;transition:background 1.2s}
+body{height:100vh;overflow:hidden;color:#fff}
 
 /* LOCK */
 #lock{
@@ -23,15 +23,16 @@ body{height:100vh;overflow:hidden;color:#fff;transition:background 1.2s}
 
 /* APP */
 .app{
-  height:100%;display:flex;flex-direction:column;
+  height:100%;
+  display:flex;flex-direction:column;
   justify-content:center;align-items:center;
   text-align:center;padding:20px;
-  animation:fade 2s
+  animation:fade 1.8s ease
 }
-h1{font-size:2.4rem;text-shadow:0 0 20px rgba(255,255,255,.6)}
-.name{font-size:1.8rem;font-weight:bold;margin:8px 0}
-.message{font-size:1.1rem;line-height:1.7;max-width:420px}
+h1{font-size:2.3rem;text-shadow:0 0 20px rgba(255,255,255,.6)}
+.message{font-size:1.15rem;line-height:1.8;max-width:420px;margin:20px 0}
 svg{width:180px;margin:15px 0;animation:float 3s infinite}
+
 button{
   background:#fff;color:#ff2e63;
   border:none;padding:12px 30px;
@@ -39,19 +40,48 @@ button{
   box-shadow:0 10px 25px rgba(0,0,0,.3)
 }
 
-/* CHAT */
-.chat{width:100%;max-width:420px;max-height:45vh;overflow-y:auto;margin-top:15px}
-.bubble{padding:10px 15px;border-radius:18px;margin:8px 0;max-width:80%;animation:fade .6s}
-.me{background:rgba(255,255,255,.25)}
+/* CHAT MODAL */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;justify-content:center;align-items:center;
+  z-index:999
+}
+.modal-box{
+  background:linear-gradient(135deg,#ff758c,#ff7eb3);
+  width:90%;max-width:420px;
+  border-radius:20px;
+  padding:20px;
+  max-height:75vh;
+  display:flex;flex-direction:column;
+}
+.chat{overflow-y:auto;flex:1;margin-top:10px}
+.bubble{
+  padding:10px 14px;border-radius:18px;
+  margin:8px 0;max-width:80%;
+  animation:fade .5s
+}
+.me{background:rgba(255,255,255,.3)}
 .you{background:#fff;color:#ff2e63;margin-left:auto}
 
-/* EFFECTS */
-.heart{position:absolute;font-size:22px;animation:rise 4s linear forwards}
-.fire{position:absolute;width:6px;height:6px;background:white;border-radius:50%;animation:explode 1.2s forwards}
+/* BACKGROUND */
+.particle{
+  position:absolute;
+  animation:floatUp 6s linear infinite;
+  opacity:.7
+}
 
+/* FIREWORK */
+.fire{
+  position:absolute;width:6px;height:6px;
+  background:white;border-radius:50%;
+  animation:explode 1.2s forwards
+}
+
+/* ANIMATIONS */
 @keyframes fade{from{opacity:0;transform:translateY(20px)}}
 @keyframes float{50%{transform:translateY(-12px)}}
-@keyframes rise{to{transform:translateY(-120vh);opacity:0}}
+@keyframes floatUp{to{transform:translateY(-120vh);opacity:0}}
 @keyframes explode{to{transform:translate(var(--x),var(--y));opacity:0}}
 </style>
 </head>
@@ -60,9 +90,9 @@ button{
 
 <!-- LOCK -->
 <div id="lock">
-  <h2>🔐 Only Bestie Can Open 💖</h2>
-  <input type="password" id="pass" placeholder="Secret word ❤️">
-  <button onclick="unlock()">Unlock</button>
+  <h2>🔐 A Little Surprise ❤️</h2>
+  <input type="password" id="pass" placeholder="Secret word">
+  <button onclick="unlock()">Open</button>
 </div>
 
 <audio id="music" loop>
@@ -70,173 +100,202 @@ button{
 </audio>
 
 <div class="app">
-  <h1 id="dayTitle"></h1>
-  <div class="name">Bestie 💖</div>
-  <p class="message" id="message"></p>
+  <h1 id="title"></h1>
+  <p class="message" id="wish"></p>
   <div id="svgBox"></div>
+  <button onclick="openChat()">💬 Open Love Chat</button>
+</div>
 
-  <button onclick="startChat()">💬 Read Our Love Chat</button>
-  <div class="chat" id="chat"></div>
+<!-- CHAT MODAL -->
+<div class="modal" id="chatModal">
+  <div class="modal-box">
+    <h3 style="text-align:center">💖 A Little Conversation 💖</h3>
+    <div class="chat" id="chat"></div>
+    <button onclick="closeChat()">Close</button>
+  </div>
 </div>
 
 <script>
-/* PASSWORD */
-const PASSWORD="missu";   // 🔑 change if you want
+const PASSWORD="love";
 function unlock(){
   if(pass.value===PASSWORD){
     lock.style.display="none";
     music.play();
-  } else alert("Wrong password… try with love 💖");
+  } else alert("Try again… from the heart ❤️");
 }
 
-/* DATE */
-const day = new Date().getDate();
+const day=new Date().getDate();
 
-/* CONTENT */
-const content={
+/* DAY DATA WITH EXPANDED CHATS */
+const data={
 7:{
-title:"Rose Day 🌹",
-bg:"linear-gradient(#ff5f8f,#ff1e56)",
-msg:"Bestie, you are my rose 🌹 soft, rare & forever special 💖",
-svg:`<svg viewBox="0 0 200 200"><circle cx="100" cy="90" r="40" fill="#ff1e56"/><circle cx="80" cy="80" r="30" fill="#ff4f81"/><circle cx="120" cy="80" r="30" fill="#ff4f81"/></svg>`,
-chat:[
-["me","I brought you a rose today 🌹"],
-["you","For me? 🥺"],
-["me","Because you bloom in my heart"],
-["me","Every single day"],
-["you","That’s so sweet ❤️"],
-["me","Just like you, Bestie"]
-]},
+ title:"Rose Day 🌹",
+ bg:"linear-gradient(#ff5f8f,#ff1e56)",
+ wish:"May your life always bloom with love, warmth and gentle smiles 🌹",
+ svg:`<svg viewBox="0 0 200 200"><circle cx="100" cy="90" r="40" fill="#ff1e56"/><circle cx="80" cy="80" r="30" fill="#ff4f81"/><circle cx="120" cy="80" r="30" fill="#ff4f81"/></svg>`,
+ chat:[
+ ["me","I thought of you today 🌹"],
+ ["you","Why today?"],
+ ["me","Because roses bloom quietly, like kind hearts"],
+ ["me","They don’t ask for attention"],
+ ["you","That’s beautiful ❤️"],
+ ["me","Some people feel like that"],
+ ["you","Feel like what?"],
+ ["me","Like home"]
+ ]
+},
 8:{
-title:"Propose Day 💍",
-bg:"linear-gradient(#7b2ff7,#c77dff)",
-msg:"If love asked me to choose, I would choose you 💍❤️",
-svg:`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="40" fill="none" stroke="#fff" stroke-width="6"/></svg>`,
-chat:[
-["me","Bestie… can I say something?"],
-["you","Yes 😊"],
-["me","Every heartbeat of mine knows you"],
-["me","Will you always stay with me? 💍"],
-["you","Always ❤️"],
-["me","That’s my forever answer"]
-]},
+ title:"Propose Day 💍",
+ bg:"linear-gradient(#7b2ff7,#c77dff)",
+ wish:"Some connections don’t need words — they just feel right 💍",
+ svg:`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="40" fill="none" stroke="#fff" stroke-width="6"/></svg>`,
+ chat:[
+ ["me","Can I tell you something honestly?"],
+ ["you","Sure 😊"],
+ ["me","I feel calm when you’re around"],
+ ["me","Like things make sense"],
+ ["you","That’s nice ❤️"],
+ ["me","So I don’t need a big proposal"],
+ ["me","Just stay"]
+ ]
+},
 9:{
-title:"Chocolate Day 🍫",
-bg:"linear-gradient(#5a3825,#8b5a2b)",
-msg:"You make life sweeter than chocolate 🍫💖",
-svg:`<svg viewBox="0 0 200 200"><rect x="50" y="60" width="100" height="80" rx="10" fill="#4e342e"/></svg>`,
-chat:[
-["me","I have chocolate for you 🍫"],
-["you","I love chocolate 😋"],
-["me","But I love you more"],
-["you","Haha ❤️"],
-["me","Truth only"]
-]},
+ title:"Chocolate Day 🍫",
+ bg:"linear-gradient(#5a3825,#8b5a2b)",
+ wish:"May life always feel sweet, just like shared moments 🍫",
+ svg:`<svg viewBox="0 0 200 200"><rect x="50" y="60" width="100" height="80" rx="10" fill="#4e342e"/></svg>`,
+ chat:[
+ ["me","I brought chocolate 🍫"],
+ ["you","Yay 😋"],
+ ["me","But the best part isn’t the taste"],
+ ["you","Then what is it?"],
+ ["me","Sharing it"],
+ ["you","I like that ❤️"],
+ ["me","Some sweetness lasts longer"]
+ ]
+},
 10:{
-title:"Teddy Day 🧸",
-bg:"linear-gradient(#ffb5a7,#f08080)",
-msg:"If hugs had a shape, they’d look like you 🧸🤗",
-svg:`<svg viewBox="0 0 200 200"><circle cx="70" cy="70" r="25" fill="#ffccbc"/><circle cx="130" cy="70" r="25" fill="#ffccbc"/><circle cx="100" cy="110" r="45" fill="#ffab91"/></svg>`,
-chat:[
-["me","I wish I could hug you right now 🧸"],
-["you","Me too 🤗"],
-["me","So this teddy carries my hug"],
-["you","I’ll keep it forever ❤️"]
-]},
+ title:"Teddy Day 🧸",
+ bg:"linear-gradient(#ffb5a7,#f08080)",
+ wish:"Comfort doesn’t always need words 🧸🤍",
+ svg:`<svg viewBox="0 0 200 200"><circle cx="70" cy="70" r="25" fill="#ffccbc"/><circle cx="130" cy="70" r="25" fill="#ffccbc"/><circle cx="100" cy="110" r="45" fill="#ffab91"/></svg>`,
+ chat:[
+ ["me","Do you like hugs?"],
+ ["you","Of course 🤗"],
+ ["me","Some days need them more"],
+ ["you","Today feels like one"],
+ ["me","Then imagine one right now"],
+ ["you","I can feel it ❤️"]
+ ]
+},
 11:{
-title:"Promise Day 🤝",
-bg:"linear-gradient(#4facfe,#00f2fe)",
-msg:"I promise to choose you every single day 🤝💖",
-svg:`<svg viewBox="0 0 200 200"><path d="M40 100 L160 100" stroke="#fff" stroke-width="10"/></svg>`,
-chat:[
-["me","I want to promise you something"],
-["you","What promise?"],
-["me","To stay — no matter what"],
-["you","That means everything ❤️"]
-]},
+ title:"Promise Day 🤝",
+ bg:"linear-gradient(#4facfe,#00f2fe)",
+ wish:"Promises are felt, not spoken 🤝",
+ svg:`<svg viewBox="0 0 200 200"><path d="M40 100 L160 100" stroke="#fff" stroke-width="10"/></svg>`,
+ chat:[
+ ["me","Can I promise something quietly?"],
+ ["you","What promise?"],
+ ["me","To show up"],
+ ["me","Even when it’s hard"],
+ ["you","That matters ❤️"],
+ ["me","Some promises live forever"]
+ ]
+},
 12:{
-title:"Hug Day 🤗",
-bg:"linear-gradient(#ff9966,#ff5e62)",
-msg:"This hug carries all my warmth 🤗❤️",
-svg:`<svg viewBox="0 0 200 200"><circle cx="70" cy="100" r="30" fill="#ffd180"/><circle cx="130" cy="100" r="30" fill="#ffd180"/></svg>`,
-chat:[
-["me","Close your eyes 🤗"],
-["you","Okay…"],
-["me","That’s me hugging you tight"],
-["you","I can feel it ❤️"]
-]},
+ title:"Hug Day 🤗",
+ bg:"linear-gradient(#ff9966,#ff5e62)",
+ wish:"A hug can say what words can’t 🤗",
+ svg:`<svg viewBox="0 0 200 200"><circle cx="70" cy="100" r="30" fill="#ffd180"/><circle cx="130" cy="100" r="30" fill="#ffd180"/></svg>`,
+ chat:[
+ ["me","Close your eyes"],
+ ["you","Okay…"],
+ ["me","That warmth you feel"],
+ ["me","That’s care"],
+ ["you","It feels safe ❤️"],
+ ["me","That’s the idea"]
+ ]
+},
 13:{
-title:"Kiss Day 💋",
-bg:"linear-gradient(#ff0844,#ffb199)",
-msg:"A kiss that whispers forever 💋💖",
-svg:`<svg viewBox="0 0 200 200"><path d="M60 100 Q100 140 140 100" stroke="#fff" stroke-width="6" fill="none"/></svg>`,
-chat:[
-["me","Can I steal a kiss? 💋"],
-["you","Only one 😘"],
-["me","I’ll make it last forever"],
-["you","Cheater ❤️"]
-]},
+ title:"Kiss Day 💋",
+ bg:"linear-gradient(#ff0844,#ffb199)",
+ wish:"Some feelings are better felt 💋",
+ svg:`<svg viewBox="0 0 200 200"><path d="M60 100 Q100 140 140 100" stroke="#fff" stroke-width="6" fill="none"/></svg>`,
+ chat:[
+ ["me","Ever notice how silence can feel loud?"],
+ ["you","Yes"],
+ ["me","Some kisses are like that"],
+ ["you","Soft?"],
+ ["me","And unforgettable"],
+ ["you","I like that ❤️"]
+ ]
+},
 14:{
-title:"Valentine’s Day ❤️",
-bg:"linear-gradient(#c31432,#240b36)",
-msg:"Bestie, you are my today, tomorrow & forever ❤️🌹",
-svg:`<svg viewBox="0 0 200 200"><path d="M100 160 C20 90 60 30 100 60 C140 30 180 90 100 160" fill="#ff2e63"/></svg>`,
-chat:[
-["me","Today is Valentine’s Day ❤️"],
-["you","And? 😊"],
-["me","And you are my Valentine"],
-["me","My forever"],
-["you","Always ❤️"],
-["me","Always 🌹"]
-]}
+ title:"Valentine’s Day ❤️",
+ bg:"linear-gradient(#c31432,#240b36)",
+ wish:"Today is about love — in its truest form ❤️",
+ svg:`<svg viewBox="0 0 200 200"><path d="M100 160 C20 90 60 30 100 60 C140 30 180 90 100 160" fill="#ff2e63"/></svg>`,
+ chat:[
+ ["me","Today isn’t about gifts"],
+ ["you","Then what is it about?"],
+ ["me","Connection"],
+ ["me","Comfort"],
+ ["me","Choosing someone every day"],
+ ["you","That sounds perfect ❤️"],
+ ["me","It really is"]
+ ]
+}
 };
 
-const d=content[day]||content[7];
+const d=data[day]||data[7];
 document.body.style.background=d.bg;
-dayTitle.innerHTML=d.title;
-message.innerHTML=d.msg;
+title.innerHTML=d.title;
+wish.innerHTML=d.wish;
 svgBox.innerHTML=d.svg;
 
 /* CHAT */
-function startChat(){
-  chat.innerHTML="";
-  d.chat.forEach((c,i)=>{
-    setTimeout(()=>{
-      let b=document.createElement("div");
-      b.className="bubble "+(c[0]=="me"?"me":"you");
-      b.innerText=c[1];
-      chat.appendChild(b);
-      chat.scrollTop=chat.scrollHeight;
-    },i*1200);
-  });
+function openChat(){
+ chat.innerHTML="";
+ chatModal.style.display="flex";
+ d.chat.forEach((c,i)=>{
+  setTimeout(()=>{
+   let b=document.createElement("div");
+   b.className="bubble "+(c[0]=="me"?"me":"you");
+   b.innerText=c[1];
+   chat.appendChild(b);
+   chat.scrollTop=chat.scrollHeight;
+  },i*900);
+ });
 }
+function closeChat(){chatModal.style.display="none"}
+
+/* BACKGROUND PARTICLES */
+setInterval(()=>{
+ let p=document.createElement("div");
+ p.className="particle";
+ p.innerHTML="🌸";
+ p.style.left=Math.random()*100+"vw";
+ p.style.bottom="-20px";
+ p.style.fontSize=Math.random()*22+14+"px";
+ document.body.appendChild(p);
+ setTimeout(()=>p.remove(),6000);
+},350);
 
 /* MIDNIGHT FIREWORKS */
 setInterval(()=>{
-  const n=new Date();
-  if(n.getHours()==0 && n.getMinutes()==0){
-    for(let i=0;i<120;i++){
-      let f=document.createElement("div");
-      f.className="fire";
-      f.style.left="50%";f.style.top="50%";
-      f.style.setProperty("--x",(Math.random()*400-200)+"px");
-      f.style.setProperty("--y",(Math.random()*400-200)+"px");
-      document.body.appendChild(f);
-      setTimeout(()=>f.remove(),1200);
-    }
+ let n=new Date();
+ if(n.getHours()==0&&n.getMinutes()==0){
+  for(let i=0;i<120;i++){
+   let f=document.createElement("div");
+   f.className="fire";
+   f.style.left="50%";f.style.top="50%";
+   f.style.setProperty("--x",(Math.random()*400-200)+"px");
+   f.style.setProperty("--y",(Math.random()*400-200)+"px");
+   document.body.appendChild(f);
+   setTimeout(()=>f.remove(),1200);
   }
+ }
 },60000);
-
-/* HEARTS */
-document.addEventListener("click",e=>{
- let h=document.createElement("div");
- h.className="heart";
- h.innerHTML="❤️";
- h.style.left=e.clientX+"px";
- h.style.top=e.clientY+"px";
- document.body.appendChild(h);
- setTimeout(()=>h.remove(),4000);
-});
 </script>
 
 </body>
